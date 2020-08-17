@@ -14,7 +14,7 @@ app.use(
         dest: destPath,
         debug: true,
         outputStyle: 'compressed',
-        prefix: '',
+        prefix: 'src',
     }),
     express.static('public')
 );
