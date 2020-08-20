@@ -1,0 +1,31 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="form-wrapper">
+    <form action="/members/add" method="POST">
+        <h3>Add new member</h3>
+        <div>
+            <label for="f_name">First name</label>
+            <input name="f_name" type="text" id="f_name" required>
+        </div>
+        <div>
+            <label for="l_name">Last name</label>
+            <input name="l_name" type="text" id="l_name" required>
+        </div>
+        <div>
+            <label for="email">Email address</label>
+            <input name="email" type="email" id="email" required>
+        </div>
+        <div>
+            <label for="contact_no">Contact number</label>
+            <input name="contact_no" type="tel" id="contact_no" required>
+        </div>
+        <div>
+            <button class="btn">Add member</button>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

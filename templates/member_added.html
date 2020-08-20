@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="added">
+    {% for item in list %}  
+    <p>{{item.f_name}} {{item.l_name}} has been added as a member.</p>
+    {% endfor %}
+
+    <a href="/members">Return to search</a>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="form-wrapper">
+    <form action="/books/filter" method="GET">
+        <h3>Search books</h3>
+        <div>
+            <label for="author">Author</label>
+            <input name="author" type="text" id="author" placeholder="Please enter the author name">
+        </div>
+        <div>
+            <label for="title">Title</label>
+            <input name="title" type="text" id="title" placeholder="Please enter the title">
+        </div>
+        <div>
+            <button class="btn">Find book</button>
+        </div>
+    </form>
+
+    <a href="/books/add" class="add-book btn">Add new book</a>
+</div>
+
+<div class="results">
+    {% if list | length %}
+    <table class="list">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+        </tr>
+        {% for item in list %}
+        <tr>
+            <td> {{item.id}} </td>
+            <td> {{item.title}} </td>
+            <td> {{item.author}} </td>
+            <td><a href="/books/{{item.id}}/edit">Edit</a></td>
+                <td><a href="/books/{{item.id}}/delete">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>There are currently no books matching this search.</p>
+    {% endif %}
+</div>
+
+
+{% endblock %}

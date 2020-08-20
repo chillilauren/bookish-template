@@ -1,5 +1,27 @@
 ﻿﻿{% extends "_base.html" %}
 
 {% block content %}
-<p>Hello {{ message }}</p>
+<h2>Welcome to the Library</h2>
+<div class="new-additions-container">
+    <p>Latest additions</p>
+    {% if list | length %}
+    <table class="list">
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+        </tr>
+        {% for item in list %}  
+        <tr>
+            <td> {{item.title}} </td>
+            <td> {{item.author}} </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>There are currently no books in the library.</p>
+    {% endif %}
+
+</div>
+
+
 {% endblock %}

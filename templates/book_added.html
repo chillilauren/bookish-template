@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="added">
+    {% for item in list %}  
+    <p>The book {{item.title}} by {{item.author}} has been added to the library.</p>
+    {% endfor %}
+
+    <a href="/books">Return to search</a>
+</div>
+
+
+{% endblock %}

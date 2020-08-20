@@ -1,0 +1,60 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="form-wrapper">
+    <form class="member-form" action="/members/filter" method="GET">
+        <h3>Search members</h3>
+        <div>
+            <label for="f_name">First name</label>
+            <input name="f_name" type="text" id="f_name" placeholder="Please enter first name">
+        </div>
+        <div>
+            <label for="l_name">Last name</label>
+            <input name="l_name" type="text" id="l_name" placeholder="Please enter last name">
+        </div>
+        <div>
+            <label for="email">Email address</label>
+            <input name="email" type="email" id="email" placeholder="Please enter email address">
+        </div>
+        <div>
+            <label for="contact_no">Contact number</label>
+            <input name="contact_no" type="tel" id="contact_no" placeholder="Please enter telephone number">
+        </div>
+        <div>
+            <button class="btn">Find member</button>
+        </div>
+    </form>
+
+    <a href="/members/add" class="add-member btn">Add new member</a>
+
+</div>
+
+<div class="results">
+    {% if list | length %}
+    <table class="list">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <!-- <th>ID</th> -->
+        </tr>
+        {% for item in list %}
+            <tr>
+                <td>{{item.f_name}} {{item.l_name}}</td>
+                <td> {{item.email}} </td>
+                <td> {{item.contact_no}} </td>
+                <!-- <td>{{item.id}} </td> -->
+                <td><a href="/members/{{item.id}}/edit">Edit</a></td>
+                <td><a href="/members/{{item.id}}/delete">Delete</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>There are currently no members matching this search.</p>
+    {% endif %}
+
+</div>
+
+
+{% endblock %}
