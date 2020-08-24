@@ -18,10 +18,14 @@ header {
     height: 200px;
   }
   nav {
-    text-align: center;
-    background: #F7717D;
+    // text-align: center;
+    // background: #F7717D;
     text-transform: uppercase;
     padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     .nav-list {
       list-style: none;
       display: flex;
@@ -55,6 +59,16 @@ header {
         }
       }
     }
+    .login-links {
+      // background: red;
+      position: absolute;
+      right: 200px;
+      a {
+        font-size: 0.8em;
+        text-decoration: none;
+        margin: 0 10px;
+      }
+    }
     
   }
 }
@@ -70,6 +84,7 @@ main {
     // background: red;
     width: 80vw;
     margin: 20px auto;
+    padding: 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -145,7 +160,7 @@ main {
     }
     .member-form {
       label {
-        width: 130px;
+        width: 140px;
       }
     }
     .btn {

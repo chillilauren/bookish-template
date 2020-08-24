@@ -3,13 +3,14 @@ import express from "express";
 import nunjucks from "nunjucks";
 import sassMiddleware from "node-sass-middleware";
 import bodyParser from "body-parser";
-import { fetchAllBooks, findBook, addBook, getBookById } from "./books";
-import { addMember, findMember, getMemberById, editMember } from "./members";
+import { fetchAllBooks, findBook, addBook, getBookById, editBook, softDeleteBook } from "./books";
+import { findMember, getMemberById, editMember, addMember, fetchMemberByEmail } from "./members";
 import console from "console";
+import passport from "passport";
+import { hashPassword } from "./security";
 
 const app = express();
 const port = process.env['PORT'] || 3000;
-
 app.use(
     bodyParser.urlencoded({ extended: true })
 )
@@ -33,12 +34,12 @@ nunjucks.configure(PATH_TO_TEMPLATES, {
     express: app
 });
 
-// On hompage render index.html
+// On hompage render index.html and list all books
 app.get("/", async (req, res) => {
-    const model = {
+    const books =  {
         list: await fetchAllBooks()
-    }
-    res.render('index.html', model);
+    };
+    res.render('index.html', books);
 });
 
 // BOOKS
@@ -79,9 +80,35 @@ app.get("/books/:id/edit", async (req, res) => {
     const id = parseInt(req.params.id);
     const book = await getBookById(id);
 
-    console.log(id);
     res.render('edit-book.html', book)
 })
+
+app.post("/books/:id/edit", async (req, res) => {
+    const id = parseInt(req.params.id);
+    const book = req.body;
+    // console.log(book);
+
+    await editBook(id, book.author, book.title, book.genre);
+    const model = {
+        list: await findBook(book.author, book.title)
+    }
+
+    res.render('book_saved.html', model);
+})
+
+// Delete book
+// app.get("/books/:id/delete", async (req, res) => {
+//     const id = parseInt(req.params.id);
+//     const book = await getBookById(id);
+
+//     console.log("hello", book);
+    
+//     // const confirmDelete = confirm(`Are you sure you want to delete ${book.title} by ${book.author}?`)
+//     // if (confirmDelete) {
+//     //     softDeleteBook();
+//     // }
+//     // res.render('edit-book.html', book)
+// })
 
 // MEMBERS
 
@@ -104,52 +131,120 @@ app.get("/members/filter", async (req, res) => {
     res.render('search_member.html', model);
 });
 
-// Add new member to database
-app.get("/members/add", async (req, res) => {
-    res.render('add_member.html');
-});
+// configure express to use Passport
+app.use(passport.initialize());
 
-app.post("/members/add", async (req, res) => {
-    const member = req.body;
-    await addMember(member);
+// passport.use(new passportLocal.Strategy(
+//     {
+//         usernameField: "email",
+//         passwordField: "password",
+//     },
+//     async (email, password, done) => {
+//         const member = await tryLoginMember(email, password);
+//         if (member) {
+//             return done(null, member);
+//         }
+//         return done(null, false, {message: "Email or password is incorect"})
+//     }
+// ));
 
-    const model = {
-        list: await findMember(member.f_name, member.l_name, member.email, member.contact_no)
+// Register member
+app.get("/register", async (req, res) => {
+    res.render('register.html')
+})
+
+app.post("/register", async (req, res) => {
+    console.log(req.body);
+    
+    const registerMember = {
+        f_name: req.body.f_name,
+        l_name: req.body.l_name,
+        email: req.body.email,
+        contact_no: req.body.contact_no,
+        password: req.body.password
     }
-    res.render("member_added.html", model);
+    console.log(registerMember);
+    
+    // check password match if not return error
+    // call add member with
+    try {
+        if (registerMember.password != req.body.rpt_password) {
+            throw "The passwords do not match.";
+        } else {
+            console.log("Passwords match");
+            await addMember(registerMember);
+
+            const model = {
+                list: await findMember(registerMember.f_name, registerMember.l_name, registerMember.email, registerMember.contact_no)
+            }
+            res.render("member_added.html", model);
+        }
+    }
+    catch (err) {
+        console.log(err);
+        // alert(err);
+    }
 });
+
+// Login
+
+app.get("/login", async (req, res) => {
+    res.render('login.html')
+})
+
+app.post("/login", async (req, res) => {
+    // look up email
+    const memberEmail = req.body.email;
+    const member = await fetchMemberByEmail(memberEmail);
+
+    console.log(member);
+    
+    // hash password entered
+    const enteredPwdHash = hashPassword(req.body.password);
+
+    console.log(enteredPwdHash, member.password);
+    // does hash password === hash of provided password
+    try {
+        if (enteredPwdHash != member.hashed_pwd) {
+            throw "The passwords do not match.";
+        } else {
+            console.log("Passwords match.");
+            console.log(`Welcome ${member.f_name}.`)
+
+            res.render("member_logged_in.html", member);
+        }
+    }
+    catch (err) {
+        console.log(err);
+        // alert(err);
+    }
+})
+
+
 
 // Edit member
 app.get("/members/:id/edit", async (req, res) => {
     const id = parseInt(req.params.id);
     const member = await getMemberById(id);
 
-    console.log(id);
+    // console.log(id);
     res.render('edit-member.html', member)
 })
 
-app.post("members/:id/edit", async (req, res) => {
+app.post("/members/:id/edit", async (req, res) => {
+    const id = parseInt(req.params.id);
     const member = req.body;
-    console.log(member);
+    // console.log(member);
 
-    // console.log("Hello")
-    // const id = parseInt(req.params.id);
-    // const memberID = await getMemberById(id);
-    // console.log(id, member, memberID);
+    await editMember(id, member.f_name, member.l_name, member.email, member.contact_no);
+    const model = {
+        list: await findMember(member.f_name, member.l_name, member.email, member.contact_no)
+    }
 
-    // await editMember(memberID)
-
-    // const model = {
-    //     list: await findMember(member.f_name, member.l_name, member.email, member.contact_no)
-    // }
-
-    res.render('edit-member.html')
+    res.render('member_saved.html', model);
 })
 
 // Delete member
-
-
-
 
 
 app.listen(port, () => {

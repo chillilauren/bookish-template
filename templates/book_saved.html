@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="added">
+    {% for item in list %}  
+    <p>Changes to {{item.title}} by {{item.author}} have been saved.</p>
+    {% endfor %}
+
+    <a href="/books">Return to search</a>
+</div>
+
+
+{% endblock %}

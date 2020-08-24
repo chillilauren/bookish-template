@@ -1,4 +1,5 @@
 import knex from "knex";
+import { hashPassword } from "./security";
 
 const client = knex({
     client: 'pg',
@@ -15,12 +16,13 @@ interface Member {
     f_name: string,
     l_name: string,
     email: string,
-    contact_no: string
+    contact_no: string,
+    password: string,
 }
 
 // Find member from search
 export const findMember = (fName:string, lName:string, email:string, contactNo:string) => {
-    console.log(fName,lName,email,contactNo);
+    // console.log(fName,lName,email,contactNo);
     return client
             .select("*")
             .from("member")
@@ -39,12 +41,11 @@ export const getMemberById = (id:number) => {
             .first();
 }
 
+// Check password against member email
+
+
 // Edit member
 export const editMember = (id:number, fName:string, lName:string, email:string, contactNo:string ) => {
-    const member = getMemberById(id);
-
-    console.log(member);
-
     return client("member")
             .where("id", id)
             .update(
@@ -59,16 +60,27 @@ export const editMember = (id:number, fName:string, lName:string, email:string, 
 
 // Add new member
 export const addMember = (member : Member) => {
+    const hashedPwd = hashPassword(member.password);
     return client
             .insert(
                 {
                     f_name: member.f_name,
                     l_name: member.l_name,
                     email: member.email,
-                    contact_no: member.contact_no
+                    contact_no: member.contact_no,
+                    hashed_pwd: hashedPwd
                 }
             )
             .into("member");
+}
+
+// Find member from Email
+export const fetchMemberByEmail = (email:string) => {
+    return client
+            .select("*")
+            .from("member")
+            .where("email", email)
+            .first()
 }
 
 // Delete member

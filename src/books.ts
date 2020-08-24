@@ -20,7 +20,8 @@ interface Book {
 export const fetchAllBooks = () => {
     return client
             .from("book")
-            .select("title", "author", "id");
+            .select("title", "author", "id")
+            .limit(10);
 }
 
 // Find book from search
@@ -39,14 +40,12 @@ export const getBookById = (id:number) => {
             .from("book")
             .where("id", id)
             .first();
+    // return new Book ({id: id}).fetch;
+
 }
 
 // Edit book
 export const editBook = (id:number, author:string, title:string, genre:string ) => {
-    const book = getBookById(id);
-
-    console.log(book);
-
     return client("book")
             .where("id", id)
             .update(
@@ -78,7 +77,7 @@ export const addBook = (book : Book) => {
 //             .where("id", id);
 // }
 
-const softDeleteBook = (id : number) => {
+export const softDeleteBook = (id : number) => {
     return client("book")
             .where('id', id)
             .update('deleted', true)

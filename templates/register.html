@@ -3,8 +3,9 @@
 {% block content %}
 
 <div class="form-wrapper">
-    <form action="/members/add" method="POST">
-        <h3>Add new member</h3>
+    <form class="member-form" action="/register" method="POST">
+        <h3>Register</h3>
+        <p>Please fill in your details to register.</p>
         <div>
             <label for="f_name">First name</label>
             <input name="f_name" type="text" id="f_name" required>
@@ -13,6 +14,7 @@
             <label for="l_name">Last name</label>
             <input name="l_name" type="text" id="l_name" required>
         </div>
+        <br>
         <div>
             <label for="email">Email address</label>
             <input name="email" type="email" id="email" required>
@@ -21,11 +23,20 @@
             <label for="contact_no">Contact number</label>
             <input name="contact_no" type="tel" id="contact_no" required>
         </div>
+        <br>
         <div>
-            <button class="btn">Add member</button>
+            <label for="password">Password</label>
+            <input name="password" type="password" id="password" required>
+        </div>
+        <div>
+            <label for="rpt_password">Repeat Password</label>
+            <input name="rpt_password" type="password" id="rpt_password" required>
+        </div>
+        <div>
+            <button class="btn">Register</button>
+            <p id="errorMsg"></p>
         </div>
     </form>
 </div>
-
 
 {% endblock %}
